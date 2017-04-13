@@ -14,19 +14,27 @@ public class Deque<Item> implements Iterable<Item> {
     }
 
     private class LinearIterator implements Iterator<Item> {
-	private Node it = head;
+	private Node it;
+
+	public LinearIterator() {
+	    it = head;
+	}
 
 	public boolean hasNext() {
 	    return it != null;
 	}
 
 	public Item next() {
+	    if (!hasNext())
+		throw new java.util.NoSuchElementException ("Iterator:next(): reached end of iteration.");
 	    Node tmp = it;
 	    it = it.next;
 	    return tmp.item;
 	}
 
-	public void remove(){}
+	public void remove(){
+	    throw new java.lang.UnsupportedOperationException ("Iterator:remove(): operation not allowed.");
+	}
     }
 
     Node head;
@@ -48,6 +56,9 @@ public class Deque<Item> implements Iterable<Item> {
     } // return the number of items on the deque
 
     public void addFirst(Item item) {
+	if (item == null)
+	    throw new java.lang.NullPointerException("addFirst(): insert null item attempt."); 
+	
 	Node integrate = new Node(item);
 	Node temporary;
 
@@ -67,6 +78,9 @@ public class Deque<Item> implements Iterable<Item> {
     } // add the item to the front
 
     public void addLast(Item item) {
+	if (item == null)
+	    throw new java.lang.NullPointerException("addFirst(): insert null item attempt.");
+	
 	Node integrate = new Node(item);
 
 	if (tail == null) {
@@ -84,6 +98,8 @@ public class Deque<Item> implements Iterable<Item> {
     } // add the item to the end
     
     public Item removeFirst() {
+	if (isEmpty())
+	    throw new java.util.NoSuchElementException("removeLast(): remove item from empty deque attempt.");
 	Node temporary;
 	Item remove;
 	
@@ -101,12 +117,19 @@ public class Deque<Item> implements Iterable<Item> {
     } // remove and return the item from the front
 
     public Item removeLast() {
+	if (isEmpty())
+	    throw new java.util.NoSuchElementException("removeLast(): remove item from empty deque attempt.");
 	Item remove;
 	if (tail == null) return null;
+	
+	else if (head == tail) {
+	    remove = tail.item;
+	    head = tail = null;
+	}
 
 	else {
 	    Node i;
-	    for (i = head; i.next != tail; i = i.next){}
+	    for (i = head; i.next != tail; i = i.next);
 	    tail = i;
 	    remove = tail.next.item;
 	    tail.next = null;
